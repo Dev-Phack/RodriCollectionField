@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CodesController!{% endblock %}
+
+{% block body %}
+{# {{ form_label(form.code) }}
+{{ form_errors(form.code) }}
+
+<ul>
+	{% for emailField in form.code %}
+		<li>
+			{{ form_errors(emailField) }}
+			{{ form_widget(emailField) }}
+		</li>
+	{% endfor %}
+    
+</ul> #}
+
+{# the data-index attribute is required for the JavaScript code below #}
+{#<ul class="code" data-index="{{ form.code|length > 0 ? form.code|last.vars.name + 1 : 0 }}" data-prototype="{{ form_widget(form.code.vars.prototype)|e('html_attr') }}"></ul>#}
+{#<button type="button" class="add_item_link" data-collection-holder-class="code">Ajouter un code</button>#}
+<div class="container-fluid w-50">
+    {{ form_start(form) }}
+        <div id="code" data-prototype="{{ form_row(form.code.vars.prototype)|e('html_attr') }}">
+            {{ form_row(form.code) }}
+            <span></span>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+{%  block javascripts %}
+    <script>
+        let collection, boutonAjout, span;
+        window.onload = () => {
+            collection = document.querySelector('#code');
+            span = document.querySelector('span');
+            boutonAjout = document.createElement('button');
+            boutonAjout.className = 'ajout-code btn btn-secondary';
+            boutonAjout.innerText = 'Ajouter un code';
+
+            let newbtn = span.append(boutonAjout);
+            collection.dataset.index = collection.querySelectorAll('input').length;
+            boutonAjout.addEventListener('click', function (){
+                addButton(collection, newbtn);
+            })
+        }
+
+        function addButton(collection, newbtn){
+            let prototype = collection.dataset.prototype;
+            let index = collection.dataset.index;
+            prototype = prototype.replace(/__name__/g, index);
+            let content = document.createElement('html');
+            content.innerHTML = prototype;
+            let newForm = content.querySelector('div');
+
+            let btnsuppr = document.createElement('button');
+            btnsuppr.type = 'button';
+            btnsuppr.className = 'btn btn-danger';
+            btnsuppr.id = 'delete-code-' + index;
+            btnsuppr.innerText = 'Supprimer ce code';
+            newForm.append(btnsuppr);
+            collection.dataset.index++;
+
+            let boutonAjout = collection.querySelector('.ajout-code');
+            span.insertBefore(newForm, boutonAjout);
+            btnsuppr.addEventListener('click', function (){
+                this.previousElementSibling.parentElement.remove();
+            })
+        }
+    </script>
+{% endblock %}
